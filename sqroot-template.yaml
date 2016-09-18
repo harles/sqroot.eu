@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: sqroot
+  annotations:
+    description: Template for running the sqroot.eu page
+  labels:
+    name: sqroot
+objects:
+-  apiVersion: v1
+   kind: DeploymentConfig
+   metadata:
+     name: sqroot
+     labels:
+       name: sqroot
+       type: homepage
+   spec:
+     replicas: 3
+     selector:
+       name: sqroot
+     template:
+       metadata:
+         labels:
+           name: sqroot
+       spec:
+         containers:
+           - name: sqroot
+             image: sqroot/sqroot.eu
+             ports:
+               - name: http
+                 protocol: TCP
+                 containerPort: 8080
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: sqroot
+    labels:
+      name: sqroot
+      project: learning
+  spec:
+    ports:
+      - port: 8080
+        targetPort: 8080
+    selector:
+      name: sqroot
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: sqroot
+    labels:
+      name: sqroot
+      project: learning
+  spec:
+    host: sqroot.apps.cloud.big.local
+    to:
+      kind: Service
+      name: sqroot
